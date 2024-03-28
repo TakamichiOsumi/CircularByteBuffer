@@ -12,7 +12,7 @@ CircularByteBuffer.o: CircularByteBuffer.c
 $(TEST): CircularByteBuffer.o
 	$(CC) $(CFLAGS) test_cbb.c $^ -o $@
 
-test:
+test: $(TEST)
 	@./$(TEST) 2>&1 > /dev/null && echo "Success if zero >>> $$?"
 
 clean:
