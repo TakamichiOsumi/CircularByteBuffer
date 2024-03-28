@@ -1,2 +1,3 @@
 # CircularByteBuffer
-Circular Byte Buffer in C
+
+Implementation of Circular Byte Buffer in C for my other repository.
