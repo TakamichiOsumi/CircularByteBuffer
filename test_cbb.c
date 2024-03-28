@@ -32,11 +32,11 @@ main(int argc, char **argv){
     printf("Write %zu bytes\n", CBB_write(cbb, s3, strlen(s3)));
     CBB_dump_snapshot(cbb);
 
-    /* + 10, but will be reduced to 5 */
+    /* + 10, but will be reduced to 5 because of left buffer size */
     printf("Write %zu bytes\n", CBB_write(cbb, s3, strlen(s3)));
     CBB_dump_snapshot(cbb);
 
-    /* + 10, but will be reduced to 0 */
+    /* + 10, but will be reduced to 0 because of no buffer left */
     printf("Write %zu bytes\n", CBB_write(cbb, s3, strlen(s3)));
     CBB_dump_snapshot(cbb);
 
@@ -46,7 +46,7 @@ main(int argc, char **argv){
     printf("Read result : %s\n", read_buff);
     CBB_dump_snapshot(cbb);
 
-    /* -64, indicate a number bigger than the length of remaining characters */
+    /* -100, indicate a number bigger than the length of remaining characters */
     memset(read_buff, '\0', APP_REQUIRED_CBB_SIZE + 1);
     printf("Read %zu bytes\n", CBB_read(cbb, read_buff, 100, true));
     printf("Read result : %s\n", read_buff);
