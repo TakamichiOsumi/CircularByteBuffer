@@ -56,7 +56,6 @@ main(int argc, char **argv){
      * Check the case where the string start index goes from
      * before to after cbb's max_buffer_size.
      */
-    printf("Test 2\n");
     CBB_write(cbb, s3, strlen(s3));
     CBB_write(cbb, s3, strlen(s3));
     CBB_write(cbb, s3, strlen(s3));
@@ -71,6 +70,11 @@ main(int argc, char **argv){
     memset(read_buff, '\0', APP_REQUIRED_CBB_SIZE + 1);
     printf("Read %zu bytes\n", CBB_read(cbb, read_buff, APP_REQUIRED_CBB_SIZE, true));
     printf("Read result : %s\n", read_buff);
+    CBB_dump_snapshot(cbb);
+
+    /* Read from empty buffer */
+    memset(read_buff, '\0', APP_REQUIRED_CBB_SIZE + 1);
+    printf("Read %zu bytes\n", CBB_read(cbb, read_buff, APP_REQUIRED_CBB_SIZE, true));
 
     /* clean up */
     CBB_destroy(cbb);

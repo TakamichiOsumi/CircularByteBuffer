@@ -100,12 +100,13 @@ CBB_dump_snapshot(CircularByteBuffer *cbb){
 	return;
 
     printf("\n<Circular Byte Buffer Snapshot>\n"
+	   "--------------------------------------\n"
 	   "Max buffer size : %d, Used buffer size : %d\n"
-	   "Front index : %d, Rear index : %d\n"
-	   "--------------------------------------\n",
+	   "Front index : %d, Rear index : %d\n",
 	   cbb->max_buffer_size, cbb->used_buffer_size,
 	   cbb->front, cbb->rear);
 
+    printf("Main buffer : \"");
     for (i = 0; i < cbb->max_buffer_size; i++){
 	if (cbb->main_data[i] == '\0'){
 	    printf(" ");
@@ -113,10 +114,10 @@ CBB_dump_snapshot(CircularByteBuffer *cbb){
 	}else
 	    printf("%c", cbb->main_data[i]);
     }
+    printf("\"\n");
 
-    printf("\n"
-	   "--------------------------------------\n"
-	   "String stats : # of null-termination %d\n",
+    printf("String stats : # of null-terminations %d\n"
+	   "--------------------------------------\n",
 	   null_counts);
 }
 
