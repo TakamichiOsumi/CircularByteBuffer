@@ -42,18 +42,19 @@ CBB_get_left_size(CircularByteBuffer *cbb){
 
 size_t
 CBB_write(CircularByteBuffer *cbb, char *write_data, size_t write_data_length){
-    int i, write_len, write_start_index;
+    int i, write_len;
+
+    if (CBB_is_full(cbb))
+	return 0;
 
     write_len = write_data_length <= CBB_get_left_size(cbb) ?
 	write_data_length : CBB_get_left_size(cbb);
-
-    write_start_index = cbb->rear;
 
     for (i = 0; i < write_len; i++){
 	cbb->main_data[cbb->rear  % cbb->max_buffer_size] = write_data[i];
 	printf("inserting '%c' to index '%d'\n",
 	       write_data[i], cbb->rear % cbb->max_buffer_size);
-	cbb->rear++;
+	cbb->rear = (cbb->rear + 1) % cbb->max_buffer_size;
 	cbb->used_buffer_size++;
     }
 
@@ -63,22 +64,59 @@ CBB_write(CircularByteBuffer *cbb, char *write_data, size_t write_data_length){
 size_t
 CBB_read(CircularByteBuffer *cbb, char *read_buf, size_t read_data_len,
 	 bool clean_data_source){
-    return 0;
+    int i, iter, start_pos = cbb->front;
+
+    if (CBB_is_empty(cbb))
+	return 0;
+
+    iter = cbb->used_buffer_size <= read_data_len ?
+	cbb->used_buffer_size : read_data_len;
+
+    for (i = 0; i < iter; i++){
+	read_buf[i] = cbb->main_data[(start_pos + i) % cbb->max_buffer_size];
+	printf("reading '%c' from index '%d'\n",
+	       cbb->main_data[(start_pos + i) % cbb->max_buffer_size],
+	       (start_pos + i) % cbb->max_buffer_size);
+	if (clean_data_source){
+	    cbb->main_data[(start_pos + i) % cbb->max_buffer_size] = '\0';
+	}
+	cbb->front = (cbb->front + 1) % cbb->max_buffer_size;
+	cbb->used_buffer_size--;
+    }
+
+    return iter;
+}
+
+void
+CBB_test_main_data(CircularByteBuffer *cbb, char *expected){
+    return;
 }
 
 void
 CBB_dump_snapshot(CircularByteBuffer *cbb){
+    int i, null_counts = 0;
+
     if (!cbb)
 	return;
 
     printf("\n<Circular Byte Buffer Snapshot>\n"
 	   "Max buffer size : %d, Used buffer size : %d\n"
 	   "Front index : %d, Rear index : %d\n"
-	   "--------------------------------------\n"
-	   "%s\n"
 	   "--------------------------------------\n",
 	   cbb->max_buffer_size, cbb->used_buffer_size,
-	   cbb->front, cbb->rear, cbb->main_data);
+	   cbb->front, cbb->rear);
+
+    for (i = 0; i < cbb->max_buffer_size; i++){
+	if (cbb->main_data[i] == '\0'){
+	    printf(" ");
+	    null_counts++;
+	}else
+	    printf("%c", cbb->main_data[i]);
+    }
+
+    printf("\nString stats : # of null-termination %d\n"
+	   "--------------------------------------\n",
+	   null_counts);
 }
 
 void
