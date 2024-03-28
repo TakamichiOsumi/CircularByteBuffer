@@ -8,7 +8,8 @@
 int
 main(int argc, char **argv){
     CircularByteBuffer *cbb;
-    char s1[] = "foo", s2[] = "bazz", s3[] = "1234567890";
+    char s1[] = "foo", s2[] = "bazz", s3[] = "1234567890",
+	s4[] = "abcdefg";
     char read_buff[APP_REQUIRED_CBB_SIZE + 1];
 
     cbb = CBB_init(APP_REQUIRED_CBB_SIZE);
@@ -50,6 +51,29 @@ main(int argc, char **argv){
     printf("Read %zu bytes\n", CBB_read(cbb, read_buff, 100, true));
     printf("Read result : %s\n", read_buff);
     CBB_dump_snapshot(cbb);
+
+    /*
+     * Check the case where the string start index goes from
+     * before to after cbb's max_buffer_size.
+     */
+    printf("Test 2\n");
+    CBB_write(cbb, s3, strlen(s3));
+    CBB_write(cbb, s3, strlen(s3));
+    CBB_write(cbb, s3, strlen(s3));
+    memset(read_buff, '\0', APP_REQUIRED_CBB_SIZE + 1);
+    CBB_read(cbb, read_buff, 15, true);
+    /*
+     * Now, we have a space for 15 characters at the
+     * beginning of the buffer.
+     */
+    CBB_write(cbb, s4, strlen(s4));
+    CBB_dump_snapshot(cbb);
+    memset(read_buff, '\0', APP_REQUIRED_CBB_SIZE + 1);
+    printf("Read %zu bytes\n", CBB_read(cbb, read_buff, APP_REQUIRED_CBB_SIZE, true));
+    printf("Read result : %s\n", read_buff);
+
+    /* clean up */
+    CBB_destroy(cbb);
 
     return 0;
 }
