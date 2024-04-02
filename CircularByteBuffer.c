@@ -52,8 +52,8 @@ CBB_write(CircularByteBuffer *cbb, char *write_data, size_t write_data_length){
 
     for (i = 0; i < write_len; i++){
 	cbb->main_data[cbb->rear  % cbb->max_buffer_size] = write_data[i];
-	printf("debug : inserting '%c' to index '%d'\n",
-	       write_data[i], cbb->rear % cbb->max_buffer_size);
+	/* printf("debug : inserting '%c' to index '%d'\n",
+	   write_data[i], cbb->rear % cbb->max_buffer_size); */
 	cbb->rear = (cbb->rear + 1) % cbb->max_buffer_size;
 	cbb->used_buffer_size++;
     }
@@ -74,9 +74,9 @@ CBB_read(CircularByteBuffer *cbb, char *read_buf, size_t read_data_len,
 
     for (i = 0; i < iter; i++){
 	read_buf[i] = cbb->main_data[(start_pos + i) % cbb->max_buffer_size];
-	printf("debug : reading '%c' from index '%d'\n",
+	/* printf("debug : reading '%c' from index '%d'\n",
 	       cbb->main_data[(start_pos + i) % cbb->max_buffer_size],
-	       (start_pos + i) % cbb->max_buffer_size);
+	       (start_pos + i) % cbb->max_buffer_size); */
 	if (clean_data_source){
 	    cbb->main_data[(start_pos + i) % cbb->max_buffer_size] = '\0';
 	}
